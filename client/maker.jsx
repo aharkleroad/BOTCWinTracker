@@ -99,11 +99,11 @@ const DomoList = (props) => {
 
 const Role = (props) => {
     const allChars = {
-        townsfolk: [{name: "Grandmother"}, {name: "Fortune Teller"}, {name: "Monk"}],
-        outsiders: [{name: "Mutant"}, {name: "Recluse"}, {name: "Plague Doctor"}],
-        minions: [{name: "Scarlet Woman"}, {name: "Poisoner"}, {name: "Goblin"}],
-        demons: [{name: "Imp"}, {name: "Fangu"}, {name: "Lleech"}],
-        travellers: [{name: "Harlot"}, {name: "Scapegoat"}],
+        townsfolk: [{ name: "Grandmother" }, { name: "Fortune Teller" }, { name: "Monk" }],
+        outsiders: [{ name: "Mutant" }, { name: "Recluse" }, { name: "Plague Doctor" }],
+        minions: [{ name: "Scarlet Woman" }, { name: "Poisoner" }, { name: "Goblin" }],
+        demons: [{ name: "Imp" }, { name: "Fangu" }, { name: "Lleech" }],
+        travellers: [{ name: "Harlot" }, { name: "Scapegoat" }],
     };
 
     const [chars, setChars] = useState(props.roleType);
@@ -128,18 +128,18 @@ const Role = (props) => {
     });
 
     return (
-        <>
-        <label htmlFor="charType">Character Type: </label>
+        <div>
+            <label htmlFor="charType">Character Type: </label>
             <select id="charType" name="charType" required>
                 <div className="charList">{charList}</div>
             </select>
-        </>
+        </div>
     );
 }
 
 const CharacterType = (props) => {
     return (
-        <>
+        <div>
             <label htmlFor="charType">Character Type: </label>
             <select id="charType" name="charType" onInput={props.triggerCharReload} required>
                 <option value="townsfolk" selected>Townsfolk</option>
@@ -148,7 +148,7 @@ const CharacterType = (props) => {
                 <option value="demons">Demon</option>
                 <option value="travellers">Traveller</option>
             </select>
-        </>
+        </div>
     );
 };
 
@@ -177,7 +177,7 @@ const GameForm = (props) => {
                 </select>
             </div>
 
-            <CharacterType triggerCharReload={() => {setReloadCharacters(!reloadCharacters);}} />
+            <CharacterType triggerCharReload={() => { setReloadCharacters(!reloadCharacters); }} />
 
             <Role roleType='townsfolk' reloadCharacters={reloadCharacters} />
 

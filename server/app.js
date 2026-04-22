@@ -13,7 +13,7 @@ const redis = require('redis');
 const router = require('./router.js');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
-const dbURI = process.env.MONGODB_URI || 'mongodb://localhost/DomoMakerE';
+const dbURI = process.env.MONGODB_URI || 'mongodb://localhost/BOTCWins';
 
 mongoose.connect(dbURI).catch((err) => {
     if (err) {
@@ -41,7 +41,7 @@ redisClient.connect().then(() => {
         store: new RedisStore({
             client: redisClient,
         }),
-        secret: 'Domo Arigato',
+        secret: 'I play games or whaev',
         resave: false,
         saveUninitialized: false,
     }));
