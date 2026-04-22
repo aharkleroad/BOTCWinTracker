@@ -19,17 +19,14 @@ const AccountSchema = new mongoose.Schema({
   },
   friends: {
     type: Array,
-    required: true,
     default: [],
   },
   wins: {
     type: Array,
-    required: true,
     default: {trouble: 0, sects: 0, moon: 0, other: 0},
   },
   goodGames: {
     type: Array,
-    required: true,
     default: {trouble: 0, sects: 0, moon: 0, other: 0},
   },
   characters: {
@@ -38,22 +35,20 @@ const AccountSchema = new mongoose.Schema({
   },
   totalGames: {
     type: Array,
-    required: true,
     default: {trouble: 0, sects: 0, moon: 0, other: 0},
   },
   charSwaps: {
     type: Number,
     min: 0,
-    required: true,
+    default: 0,
   },
   alignmentChanges: {
     type: Number,
     min: 0,
-    required: true,
+    default: 0,
   },
   premiumMember: {
     type: Boolean,
-    required: true,
     default: false,
   },
   createdDate: {

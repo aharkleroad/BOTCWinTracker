@@ -1,12 +1,15 @@
 const mongoose = require('mongoose');
-const _ = require('underscore');
 
 const GameSchema = new mongoose.Schema({
     script: {
         type: String,
         required: true,
     },
-    goodAlignment: {
+    goodStartAlignment: {
+        type: Boolean,
+        required: true,
+    },
+    goodEndAlignment: {
         type: Boolean,
         required: true,
     },
@@ -26,6 +29,10 @@ const GameSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    won: {
+        type: Boolean,
+        required: true,
+    },
     owner: {
         type: mongoose.Schema.ObjectId,
         required: true,
@@ -33,7 +40,7 @@ const GameSchema = new mongoose.Schema({
     },
     playedDate: {
         type: Date,
-        required: true,
+        default: Date.now,
     },
     createdDate: {
         type: Date,
@@ -41,10 +48,9 @@ const GameSchema = new mongoose.Schema({
     },
 });
 
-DomoSchema.statics.toAPI = (doc) => ({
-    name: doc.name,
-    age: doc.age
+GameSchema.statics.toAPI = (doc) => ({
+    
 });
 
-const DomoModel = mongoose.model('Domo', DomoSchema);
-module.exports = DomoModel;
+const GameModel = mongoose.model('Game', GameSchema);
+module.exports = GameModel;

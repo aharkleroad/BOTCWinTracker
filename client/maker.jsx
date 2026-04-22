@@ -44,56 +44,63 @@ const NavBar = (props) => {
     );
 };
 
-const handleGameCreate = (e, onDomoAdded) => {
+const handleGameCreate = (e, onGameAdded) => {
     e.preventDefault();
     helper.hideError();
 
-    const name = e.target.querySelector('#domoName').value;
-    const age = e.target.querySelector('#domoAge').value;
+    const script = e.target.querySelector('#script').value;
+    const alignStart = e.target.querySelector('#goodAlignment').value;
+    const charType = e.target.querySelector('#charType').value;
+    const charRole = e.target.querySelector('#charRole').value;
+    const alignSwaps = e.target.querySelector('#alignSwaps').value;
+    const charSwaps = e.target.querySelector('#charSwaps').value;
+    const won = e.target.querySelector('#win').value;
 
-    if (!name || !age) {
+    if (!script || !alignStart || !charType || !charRole || !alignSwaps || !charSwaps || !won) {
         helper.handleError('All fields are required');
         return false;
     }
 
-    helper.sendPost(e.target.action, { name, age }, onDomoAdded)
+    const playedDate = e.target.querySelector('#date').value;
+
+    helper.sendPost(e.target.action, { script, alignStart, charType, charRole, alignSwaps, charSwaps, won, playedDate }, onGameAdded);
     return false;
 };
 
-const DomoList = (props) => {
-    const [domos, setDomos] = useState(props.domos);
+const GameList = (props) => {
+    const [games, setGames] = useState(props.games);
 
     // review useEffect
     useEffect(() => {
-        const loadDomosFromServer = async () => {
-            const response = await fetch('/getDomos');
+        const loadGamesFromServer = async () => {
+            const response = await fetch('/getGames');
             const data = await response.json();
-            setDomos(data.domos);
+            setGames(data.games);
         };
 
-        loadDomosFromServer();
+        loadGamesFromServer();
     }, [props.reloadGames]);
 
-    if (domos.length === 0) {
+    if (games.length === 0) {
         return (
-            <div className="domoList">
-                <h3 className="emptyDomo">No Domos Yet!</h3>
+            <div className="gameList">
+                <h3 className="emptyPage">No Games Yet!</h3>
             </div>
         );
     }
 
-    const domoNodes = domos.map(domo => {
+    const gameRecaps = games.map(game => {
         return (
-            <div key={domo.id} className="domo">
+            <div key={game.id} className="game">
                 <img src="/assets/img/domoface.jpeg" alt="domo face" className="domoFace" />
-                <h3 className="domoName">Name: {domo.name}</h3>
-                <h3 className="domoAge">Age: {domo.age}</h3>
+                <h3 className="script">Script: {game.script}</h3>
+                <h3 className="alignment">Starting Alignment: {game.goodStartAlignment}</h3>
             </div>
         );
     });
 
     return (
-        <div className="domoList">{domoNodes}</div>
+        <div className="gameList">{gameRecaps}</div>
     );
 };
 
@@ -106,7 +113,7 @@ const Role = (props) => {
         travellers: [{ name: "Harlot" }, { name: "Scapegoat" }],
     };
 
-    const [chars, setChars] = useState(props.roleType);
+    const [chars, setChars] = useState("townsfolk");
     useEffect(() => {
         const getCharType = () => {
             let charType;
@@ -114,9 +121,8 @@ const Role = (props) => {
                 charType = document.getElementById('charType').value;
             }
             else {
-                charType = props.roleType;
+                charType = "townsfolk";
             }
-            setChars(charType);
         };
         getCharType();
     }, [props.reloadCharacters]);
@@ -129,8 +135,8 @@ const Role = (props) => {
 
     return (
         <div>
-            <label htmlFor="charType">Character Type: </label>
-            <select id="charType" name="charType" required>
+            <label htmlFor="charRole">Character Role: </label>
+            <select id="charRole" name="charRole" required>
                 <div className="charList">{charList}</div>
             </select>
         </div>
@@ -156,7 +162,7 @@ const GameForm = (props) => {
     const [reloadCharacters, setReloadCharacters] = useState(false);
 
     return (
-        <form id="domoForm" name="domoForm" className="domoForm"
+        <form id="gameForm" name="gameForm" className="gameForm"
             action="/maker" method="POST" onSubmit={(e) => handleGameCreate(e, props.triggerReload)}>
 
             <div>
@@ -170,21 +176,41 @@ const GameForm = (props) => {
             </div>
 
             <div>
-                <label htmlFor="alignment">Starting Alignment: </label>
-                <select id="alignment" name="alignment" required>
-                    <option value="good" selected>Good</option>
-                    <option value="evil">Evil</option>
+                <label htmlFor="goodAlignment">Starting Alignment: </label>
+                <select id="goodAlignment" name="goodAlignment" required>
+                    <option value={true} selected>Good</option>
+                    <option value={false}>Evil</option>
                 </select>
             </div>
 
             <CharacterType triggerCharReload={() => { setReloadCharacters(!reloadCharacters); }} />
 
-            <Role roleType='townsfolk' reloadCharacters={reloadCharacters} />
+            <Role reloadCharacters={reloadCharacters} />
 
-            <label htmlFor="date">Date Played: </label>
-            <input id="date" type="datetime-local" name="date" />
+            <div>
+                <label htmlFor="alignSwaps">Number of Alignment Swaps: </label>
+                <input type="number" id="alignSwaps" min="0" required />
+            </div>
 
-            <input className="makeDomoSubmit" type="submit" value="Add Game" />
+            <div>
+                <label htmlFor="charSwaps">Number of Character Changes: </label>
+                <input type="number" id="charSwaps" min="0" required />
+            </div>
+
+            <div>
+                <label htmlFor="win">Did You Win? </label>
+                <select id="win" name="win" required>
+                    <option value={true}>Yes</option>
+                    <option value={false}>No</option>
+                </select>
+            </div>
+
+            <div>
+                <label htmlFor="date">Date Played: </label>
+                <input id="date" type="date" name="date" />
+            </div>
+
+            <input className="makeGameSubmit" type="submit" value="Add Game" />
         </form>
     );
 };
@@ -201,7 +227,7 @@ const App = () => {
                     <GameForm triggerReload={() => setReloadGames(!reloadGames)} />
                 </div>
                 <div id="domos">
-                    <DomoList domos={[]} reloadDomos={reloadGames} />
+                    <GameList games={[]} reloadGames={reloadGames} />
                 </div>
             </div>
         </>
