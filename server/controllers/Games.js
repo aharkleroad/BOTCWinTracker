@@ -34,7 +34,7 @@ const makeGame = async (req, res) => {
     };
 
     // calculate the players end alignment
-    if (gameData.alignmentSwaps % 2 === 1){
+    if ((gameData.alignmentSwaps % 2) === 1){
         gameData.goodEndAlignment = !gameData.goodStartAlignment;
     }
     else {
@@ -51,6 +51,7 @@ const makeGame = async (req, res) => {
         await newGame.save();
         return res.status(201).json({script: newGame.script,
                                      goodStartAlignment: newGame.goodStartAlignment,
+                                     goodEndAlignment: newGame.goodEndAlignment,
                                      characterType: newGame.characterType, 
                                      characterRole: newGame.characterRole, 
                                      alignmentSwaps: newGame.alignmentSwaps, 

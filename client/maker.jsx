@@ -19,25 +19,12 @@ const NavBar = (props) => {
         loadAccountStatus();
     }, [props.reloadNav]);
 
-    // premium bar
-    if (accountStatus) {
-        return (
-            <nav className="navBar">
-                <a href="/login"><img id="logo" src="/assets/img/face.png" alt="face logo" /></a>
-                <div class="navlink"><a href="/maker">Games</a></div>
-                <div class="navlink"><a href="/maker">Stats</a></div>
-                <div class="navlink"><a href="/maker">Friends</a></div>
-                <div class="navlink"><a href="/settings">Settings</a></div>
-                <div class="navlink"><a href="/logout">Log out</a></div>
-            </nav>
-        );
-    }
-    // basic bar
     return (
         <nav className="navBar">
             <a href="/login"><img id="logo" src="/assets/img/face.png" alt="face logo" /></a>
             <div class="navlink"><a href="/maker">Games</a></div>
             <div class="navlink"><a href="/maker">Stats</a></div>
+            {accountStatus && <div class="navlink"><a href="/maker">Friends</a></div>}
             <div class="navlink"><a href="/settings">Settings</a></div>
             <div class="navlink"><a href="/logout">Log out</a></div>
         </nav>
@@ -113,7 +100,7 @@ const Role = (props) => {
         travellers: [{ name: "Harlot" }, { name: "Scapegoat" }],
     };
 
-    const [chars, setChars] = useState("townsfolk");
+    const [chars, setChars] = useState(props.startChars);
     useEffect(() => {
         const getCharType = () => {
             let charType;
@@ -121,8 +108,9 @@ const Role = (props) => {
                 charType = document.getElementById('charType').value;
             }
             else {
-                charType = "townsfolk";
+                charType = props.startChars;
             }
+            setChars(charType);
         };
         getCharType();
     }, [props.reloadCharacters]);
@@ -185,7 +173,7 @@ const GameForm = (props) => {
 
             <CharacterType triggerCharReload={() => { setReloadCharacters(!reloadCharacters); }} />
 
-            <Role reloadCharacters={reloadCharacters} />
+            <Role startChars='townsfolk' reloadCharacters={reloadCharacters} />
 
             <div>
                 <label htmlFor="alignSwaps">Number of Alignment Swaps: </label>
