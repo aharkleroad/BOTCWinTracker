@@ -8,7 +8,7 @@ const makerPage = (req, res) => {
 const getGames = async (req, res) => {
     try {
         const query = {owner: req.session.account._id};
-        const docs = await Games.find(query).select('script goodStartAlignment characterType characterRole alignmentSwaps roleSwaps playedDate').lean().exec();
+        const docs = await Games.find(query).sort({'playedDate': 'descending'}).select('script goodStartAlignment characterType characterRole alignmentSwaps roleSwaps playedDate').lean().exec();
         return res.json({games: docs});
     }
     catch (err) {
@@ -30,20 +30,28 @@ const makeGame = async (req, res) => {
         alignmentSwaps: req.body.alignSwaps,
         roleSwaps: req.body.charSwaps,
         won: req.body.won,
-        owner: req.session.account._id
+        owner: req.session.account._id,
     };
 
     // calculate the players end alignment
     if ((gameData.alignmentSwaps % 2) === 1){
-        gameData.goodEndAlignment = !gameData.goodStartAlignment;
+        if (JSON.parse(gameData.goodStartAlignment)) {
+            gameData.goodEndAlignment = false;
+        }
+        else {
+            gameData.goodEndAlignment = true;
+        }
     }
     else {
         gameData.goodEndAlignment = gameData.goodStartAlignment;
     }
 
     // add the date to the data if a played date was provided
-    if (req.body.date){
-        gameData.date = req.body.date;
+    if (req.body.playedDate){
+        gameData.playedDate = req.body.playedDate;
+    }
+    else {
+        gameData.playedDate = Date.now();
     }
 
     try {
@@ -56,8 +64,7 @@ const makeGame = async (req, res) => {
                                      characterRole: newGame.characterRole, 
                                      alignmentSwaps: newGame.alignmentSwaps, 
                                      roleSwaps: newGame.roleSwaps, 
-                                     playedDate: newGame.playedDate,
-                                     id: newGame.id, }
+                                     playedDate: newGame.playedDate,}
                                     );
     }
     catch (err) {

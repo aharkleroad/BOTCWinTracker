@@ -40,7 +40,6 @@ const GameSchema = new mongoose.Schema({
     },
     playedDate: {
         type: Date,
-        default: Date.now,
     },
     createdDate: {
         type: Date,

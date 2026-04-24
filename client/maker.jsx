@@ -36,17 +36,19 @@ const handleGameCreate = (e, onGameAdded) => {
     helper.hideError();
 
     const script = e.target.querySelector('#script').value;
-    const alignStart = e.target.querySelector('#goodAlignment').value;
+    let alignStart = e.target.querySelector('#goodAlignment').value;
     const charType = e.target.querySelector('#charType').value;
     const charRole = e.target.querySelector('#charRole').value;
     const alignSwaps = e.target.querySelector('#alignSwaps').value;
     const charSwaps = e.target.querySelector('#charSwaps').value;
     const won = e.target.querySelector('#win').value;
 
-    if (!script || !alignStart || !charType || !charRole || !alignSwaps || !charSwaps || !won) {
+    if (!script || !charType || !charRole || !alignSwaps || !charSwaps || !won) {
         helper.handleError('All fields are required');
         return false;
     }
+
+   //  alignStart = JSON.parse(alignStart);
 
     const playedDate = e.target.querySelector('#date').value;
 
@@ -166,8 +168,8 @@ const GameForm = (props) => {
             <div>
                 <label htmlFor="goodAlignment">Starting Alignment: </label>
                 <select id="goodAlignment" name="goodAlignment" required>
-                    <option value={true} selected>Good</option>
-                    <option value={false}>Evil</option>
+                    <option value="true" selected>Good</option>
+                    <option value="false" >Evil</option>
                 </select>
             </div>
 
