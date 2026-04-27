@@ -14,6 +14,14 @@ const accountSettings = (req, res) => {
     return res.render('settings');
 }
 
+const friendPage = (req, res) => {
+    return res.render('friends');
+};
+
+const statsPage = (req, res) => {
+    return res.render('stats');
+};
+
 const login = (req, res) => {
     const username = `${req.body.username}`;
     const pass = `${req.body.pass}`;
@@ -27,7 +35,7 @@ const login = (req, res) => {
             return res.status(401).json({ error: 'Wrong username or password!' });
         }
         req.session.account = Account.toAPI(account);
-        return res.json({redirect: '/maker'});
+        return res.json({ redirect: '/maker' });
     });
 };
 
@@ -62,34 +70,111 @@ const signup = async (req, res) => {
     }
 };
 
-const getAccountType = async (req, res) => {
+const getAccountStats = async (req, res) => {
     try {
-        const query = {owner: req.session.account._id};
-        const docs = await Account.find(query).select('premiumMember').lean().exec();
+        const query = { _id: req.session.account._id };
+        const docs = await Account.find(query).select('wins goodGames characters totalGames charSwaps alignmentChanges').lean().exec();
         console.log(docs);
-        return res.json({premiumMember: docs});
+        return res.json({ stats: docs });
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({error: 'Error retrieving account status!'})
+        return res.status(500).json({ error: 'Error retrieving account stats!' })
+    }
+}
+
+const setAccountStats = async (req, res) => {
+    // try {
+    //     const query = { _id: req.session.account._id };
+    //     const docs = await Account.find(query).select('premiumMember').lean().exec();
+    //     console.log(docs);
+    //     return res.json({ premiumMember: docs });
+    // }
+    // catch (err) {
+    //     console.log(err);
+    //     return res.status(500).json({ error: 'Error retrieving account status!' })
+    // }
+}
+
+const getAccountType = async (req, res) => {
+    try {
+        const query = { _id: req.session.account._id };
+        const docs = await Account.find(query).select('premiumMember').lean().exec();
+        console.log(docs);
+        return res.json({ premiumMember: docs });
+    }
+    catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Error retrieving account status!' })
     }
 }
 
 const changeAccountStatus = async (req, res) => {
     try {
-        const query = {owner: req.session.account._id};
-        const status = {premiumMember: !req.session.account.premiumMember};
-        console.log(status);
+        const query = { _id: req.session.account._id };
+        const status = { premiumMember: !req.session.account.premiumMember };
+        //console.log(status);
         const docs = await Account.findOneAndUpdate(query, status, {
             returnDocument: 'after'
         }).lean().exec();
-        console.log(docs);
-        return res.json({account: docs});
+        //console.log(docs);
+        req.session.account = Account.toAPI(docs);
+        //console.log(req.session.account);
+        return res.json({ account: docs });
     }
     catch (err) {
         console.log(err);
-        return res.status(500).json({error: 'Error changing account status!'});
+        return res.status(500).json({ error: 'Error changing account status!' });
     }
+};
+
+const addFriend = async (req, res) => {
+    try {
+        const query = { username: req.body.username };
+        const docs = await Account.find(query).lean().exec();
+        console.log(docs);
+        return res.json({ friends: docs });
+    }
+    catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Error retrieving friend account!' });
+    }
+}
+
+const resolvePassChange = async (err, account, newPass, username, req, res) => {
+    if (err || !account) {
+        return res.status(401).json({ error: 'Incorrect password!' });
+    }
+
+    try {
+        const hash = await Account.generateHash(newPass);
+        const doc = await Account.findOneAndUpdate({ username: username }, { password: hash });
+
+        return res.status(204);
+    }
+    catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'An error occured!' });
+    }
+}
+
+const changeAccountPass = async (req, res) => {
+    const username = `${req.session.account.username}`;
+    const currentPass = `${req.body.currentPass}`;
+    const newPass = `${req.body.newPass}`;
+    const newPass2 = `${req.body.newPass2}`;
+
+    if (!currentPass || !newPass || !newPass2) {
+        return res.status(400).json({ error: 'All fields are required!' });
+    }
+
+    if (newPass !== newPass2) {
+        return res.status(400).json({ error: 'Passwords do not match!' });
+    }
+
+    return Account.authenticate(username, currentPass, (err, account, newPass, username, req, res) => {
+        resolvePassChange(err, account, newPass, username, req, res);
+    });
 };
 
 
@@ -98,7 +183,13 @@ module.exports = {
     logout,
     login,
     signup,
+    friendPage,
+    statsPage,
+    addFriend,
     accountSettings,
     getAccountType,
+    getAccountStats,
+    setAccountStats,
     changeAccountStatus,
+    changeAccountPass,
 };

@@ -30,8 +30,16 @@ const bypassSecure = (req, res, next) => {
     return next();
 }
 
+const requiresPremium = (req, res, next) => {
+    if (!req.session.account.premiumStatus){
+        return res.redirect('/');
+    }
+    return next();
+}
+
 module.exports.requiresLogin = requiresLogin;
 module.exports.requiresLogout = requiresLogout;
+module.exports.requiresPremium = requiresPremium;
 
 // checks what environment code is running in
 if (process.env.NODE_ENV === 'production'){

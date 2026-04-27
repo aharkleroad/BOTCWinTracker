@@ -15,7 +15,15 @@ const router = (app) => {
     app.get('/logout', mid.requiresLogin, controllers.Account.logout);
 
     app.get('/settings', mid.requiresLogin, controllers.Account.accountSettings);
-    app.post('/settings', mid.requiresLogin, controllers.Account.changeAccountStatus);
+    app.post('/accountSettings', mid.requiresLogin, controllers.Account.changeAccountStatus);
+    app.post('/passSettings', mid.requiresLogin, controllers.Account.changeAccountPass); 
+
+    app.get('/friends', mid.requiresLogin, controllers.Account.friendPage);
+    app.post('/friends', mid.requiresLogin, mid.requiresPremium, controllers.Account.addFriend);
+
+    app.get('/getStats', mid.requiresLogin, controllers.Account.getAccountStats);
+    app.get('/stats', mid.requiresLogin, controllers.Account.statsPage);
+    app.post('/stats', mid.requiresLogin, mid.requiresPremium, controllers.Account.setAccountStats);
 
     app.get('/maker', mid.requiresLogin, controllers.Games.makerPage);
     app.post('/maker', mid.requiresLogin, controllers.Games.makeGame);

@@ -10,9 +10,8 @@ const NavBar = (props) => {
     useEffect(() => {
         // need to access account status 
         const loadAccountStatus = async () => {
-            const data = { premiumStatus: true };
-            // const response = await fetch('/getDomos');
-            // const data = await response.json();
+            const response = await fetch('/getAccountType');
+            const data = await response.json();
             setStatus(data.premiumStatus);
         }
 
@@ -47,8 +46,6 @@ const handleGameCreate = (e, onGameAdded) => {
         helper.handleError('All fields are required');
         return false;
     }
-
-   //  alignStart = JSON.parse(alignStart);
 
     const playedDate = e.target.querySelector('#date').value;
 
@@ -210,7 +207,7 @@ const App = () => {
 
     return (
         <>
-            <NavBar reloadNav={false} />
+            <NavBar status={reloadStatus} />
 
             <div className="mainPageContents">
                 <div id="createGame">
