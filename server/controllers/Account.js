@@ -141,22 +141,22 @@ const addFriend = async (req, res) => {
     }
 }
 
-const resolvePassChange = async (err, account, newPass, username, req, res) => {
-    if (err || !account) {
-        return res.status(401).json({ error: 'Incorrect password!' });
-    }
+// const resolvePassChange = async (err, account, newPass, username, req, res) => {
+//     if (err || !account) {
+//         return res.status(401).json({ error: 'Incorrect password!' });
+//     }
 
-    try {
-        const hash = await Account.generateHash(newPass);
-        const doc = await Account.findOneAndUpdate({ username: username }, { password: hash });
+//     try {
+//         const hash = await Account.generateHash(newPass);
+//         const doc = await Account.findOneAndUpdate({ username: username }, { password: hash });
 
-        return res.status(204);
-    }
-    catch (err) {
-        console.log(err);
-        return res.status(500).json({ error: 'An error occured!' });
-    }
-}
+//         return res.status(204);
+//     }
+//     catch (err) {
+//         console.log(err);
+//         return res.status(500).json({ error: 'An error occured!' });
+//     }
+// }
 
 const changeAccountPass = async (req, res) => {
     const username = `${req.session.account.username}`;
@@ -172,9 +172,8 @@ const changeAccountPass = async (req, res) => {
         return res.status(400).json({ error: 'Passwords do not match!' });
     }
 
-    return Account.authenticate(username, currentPass, (err, account, newPass, username, req, res) => {
-        resolvePassChange(err, account, newPass, username, req, res);
-    });
+    // finish updating signature
+    return Account.setNewPass(username, currentPass, newPass, req, res);
 };
 
 

@@ -86,5 +86,27 @@ AccountSchema.statics.authenticate = async (username, password, callback) => {
   }
 };
 
+// Helper function for verifying a password exists and updating it
+AccountSchema.statics.setNewPass = async (username, oldPassword, newPassword, req, res) => {
+  try {
+    const doc = await AccountModel.findOne({username}).exec();
+    if(!doc) {
+      return res.status(404).json({ error: 'Could not find account!' });
+    }
+
+    const match = await bcrypt.compare(oldPassword, doc.password);
+    if (match) {
+      const hash = await AccountModel.generateHash(newPassword);
+      const user = await AccountModel.findOneAndUpdate({ username: username }, { password: hash });
+
+      return res.status(204);
+    }
+    return res.status(400).json({error: "Incorrect password"});
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({error: "An error occurred while changing pasword"});
+  }
+};
+
 AccountModel = mongoose.model('Account', AccountSchema);
 module.exports = AccountModel;

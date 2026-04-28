@@ -14,7 +14,7 @@ const NavBar = (props) => {
         const loadAccountStatus = async () => {
             const response = await fetch('/getAccountType');
             const data = await response.json();
-            setStatus(data.premiumStatus);
+            setStatus(data.premiumMember[0].premiumMember);
         }
 
         loadAccountStatus();
@@ -22,10 +22,10 @@ const NavBar = (props) => {
 
     return (
         <nav className="navBar">
-            <a href="/login"><img id="logo" src="/assets/img/face.png" alt="face logo" /></a>
+            <a href="/login"><img id="logo" src="/assets/img/BOTCIcon.png" alt="face logo" /></a>
             <div class="navlink"><a href="/maker">Games</a></div>
-            <div class="navlink"><a href="/maker">Stats</a></div>
-            {accountStatus && <div class="navlink"><a href="/maker">Friends</a></div>}
+            <div class="navlink"><a href="/stats">Stats</a></div>
+            {accountStatus && <div class="navlink"><a href="/friends">Friends</a></div>}
             <div class="navlink"><a href="/settings">Settings</a></div>
             <div class="navlink"><a href="/logout">Log out</a></div>
         </nav>
@@ -44,7 +44,7 @@ const AccountTypeForm = (props) => {
     return (
         <form id="accountForm" name="accountForm" className="accountForm"
             action="/accountSettings" method="POST" onSubmit={(e) => handleAccountChange(e, props.triggerReload)}>
-            <DisplayAccountType />
+            <DisplayAccountType account={false} reloadAccountDisplay={props.reloadAccountDisplay}/>
         </form>
     );
 };
@@ -57,13 +57,13 @@ const DisplayAccountType = (props) => {
         const loadAccountFromServer = async () => {
             const response = await fetch('/getAccountType');
             const data = await response.json();
-            setAccount(data.premiumMember);
+            setAccount(data.premiumMember[0].premiumMember);
         };
 
         loadAccountFromServer();
-    }, [props.reloadAccount]);
+    }, [props.reloadAccountDisplay]);
 
-    if (setAccount === true) {
+    if (account === true) {
         return (
             <>
                 <p>Premium account</p>
@@ -145,12 +145,12 @@ const App = () => {
 
     return (
         <>
-            <NavBar status={true} reloadNav={reloadStatus} />
+            <NavBar status={false} reloadNav={reloadStatus} />
 
             <div>
                 <div id="changeAccountStatus">
                     <h1>Your Account Status: </h1>
-                    <AccountTypeForm triggerReload={() => setReloadStatus(!reloadStatus)} />
+                    <AccountTypeForm triggerReload={() => setReloadStatus(!reloadStatus)} reloadAccountDisplay={reloadStatus}/>
                 </div>
 
                 <div id="changePassword">
