@@ -71,6 +71,18 @@ const signup = async (req, res) => {
 };
 
 const getAccountStats = async (req, res) => {
+    if (req.body.username) {
+        try {
+            const query = { username: req.body.username };
+            const docs = await Account.find(query).select('wins goodGames characters totalGames charSwaps alignmentChanges').lean().exec();
+            console.log(docs);
+            return res.json({ stats: docs });
+        }
+        catch (err) {
+            console.log(err);
+            return res.status(500).json({ error: 'Error retrieving account stats!' })
+        }
+    }
     try {
         const query = { _id: req.session.account._id };
         const docs = await Account.find(query).select('wins goodGames characters totalGames charSwaps alignmentChanges').lean().exec();
@@ -84,16 +96,8 @@ const getAccountStats = async (req, res) => {
 }
 
 const setAccountStats = async (req, res) => {
-    // try {
-    //     const query = { _id: req.session.account._id };
-    //     const docs = await Account.find(query).select('premiumMember').lean().exec();
-    //     console.log(docs);
-    //     return res.json({ premiumMember: docs });
-    // }
-    // catch (err) {
-    //     console.log(err);
-    //     return res.status(500).json({ error: 'Error retrieving account status!' })
-    // }
+    console.log(req.body.gameStats);
+    return res.status(200);
 }
 
 const getAccountType = async (req, res) => {
@@ -113,13 +117,10 @@ const changeAccountStatus = async (req, res) => {
     try {
         const query = { _id: req.session.account._id };
         const status = { premiumMember: !req.session.account.premiumMember };
-        //console.log(status);
         const docs = await Account.findOneAndUpdate(query, status, {
             returnDocument: 'after'
         }).lean().exec();
-        //console.log(docs);
         req.session.account = Account.toAPI(docs);
-        //console.log(req.session.account);
         return res.json({ account: docs });
     }
     catch (err) {
@@ -130,10 +131,21 @@ const changeAccountStatus = async (req, res) => {
 
 const addFriend = async (req, res) => {
     try {
-        const query = { username: req.body.username };
-        const docs = await Account.find(query).lean().exec();
-        console.log(docs);
-        return res.json({ friends: docs });
+        const friendQuery = { username: req.body.username };
+        const friendDoc = await Account.find(friendQuery).lean().exec();
+        console.log(friendDoc[0]);
+        if (!friendDoc) {
+            return res.status(404).json({ error: "No account with that username found!" })
+        }
+
+        const accountQuery = { _id: req.session.account._id };
+        const accountUpdate = { $addToSet: { friends: friendDoc[0] } }
+        const accountDoc = await Account.findOneAndUpdate(accountQuery, accountUpdate, {
+            returnDocument: 'after'
+        }).lean().exec();
+        console.log(accountDoc);
+        req.session.account = Account.toAPI(accountDoc);
+        return res.json({ friends: accountDoc });
     }
     catch (err) {
         console.log(err);
@@ -141,22 +153,15 @@ const addFriend = async (req, res) => {
     }
 }
 
-// const resolvePassChange = async (err, account, newPass, username, req, res) => {
-//     if (err || !account) {
-//         return res.status(401).json({ error: 'Incorrect password!' });
-//     }
-
-//     try {
-//         const hash = await Account.generateHash(newPass);
-//         const doc = await Account.findOneAndUpdate({ username: username }, { password: hash });
-
-//         return res.status(204);
-//     }
-//     catch (err) {
-//         console.log(err);
-//         return res.status(500).json({ error: 'An error occured!' });
-//     }
-// }
+const getFriends = async (req, res) => {
+    try {
+        return res.json({ friends: req.session.account.friends });
+    }
+    catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Error retrieving friends!' })
+    }
+}
 
 const changeAccountPass = async (req, res) => {
     const username = `${req.session.account.username}`;
@@ -185,6 +190,7 @@ module.exports = {
     friendPage,
     statsPage,
     addFriend,
+    getFriends,
     accountSettings,
     getAccountType,
     getAccountStats,

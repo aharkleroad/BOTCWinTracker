@@ -19,16 +19,19 @@ const router = (app) => {
     app.post('/passSettings', mid.requiresLogin, controllers.Account.changeAccountPass); 
 
     app.get('/friends', mid.requiresLogin, mid.requiresPremium, controllers.Account.friendPage);
+    app.get('/getFriends', mid.requiresLogin, mid.requiresPremium, controllers.Account.getFriends);
     app.post('/friends', mid.requiresLogin, mid.requiresPremium, controllers.Account.addFriend);
 
     app.get('/getStats', mid.requiresLogin, controllers.Account.getAccountStats);
     app.get('/stats', mid.requiresLogin, controllers.Account.statsPage);
-    app.post('/stats', mid.requiresLogin, mid.requiresPremium, controllers.Account.setAccountStats);
+    app.post('/stats', mid.requiresLogin, controllers.Account.setAccountStats);
 
     app.get('/maker', mid.requiresLogin, controllers.Games.makerPage);
     app.post('/maker', mid.requiresLogin, controllers.Games.makeGame);
     
     app.get('/', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
+    app.get('/*wild', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
+    app.get('/*wild', mid.requiresLogin, controllers.Games.makeGame);
 };
 
 module.exports = router;

@@ -99,7 +99,7 @@ AccountSchema.statics.setNewPass = async (username, oldPassword, newPassword, re
       const hash = await AccountModel.generateHash(newPassword);
       const user = await AccountModel.findOneAndUpdate({ username: username }, { password: hash });
 
-      return res.status(204);
+      return res.status(204).json({user});
     }
     return res.status(400).json({error: "Incorrect password"});
   } catch (err) {

@@ -40,8 +40,8 @@ const FriendForm = (props) => {
             action="/friends" method="POST" onSubmit={(e) => handleFriendCreate(e, props.triggerReload)}>
 
             <div>
-                <label htmlFor="username">Username: </label>
-                <input type='text' id="username" placeholder="Friend's username"/>
+                <label htmlFor="usernameField">Username: </label>
+                <input type='text' id="usernameField" placeholder="Friend's username" />
             </div>
 
             <input className="makeFriendSubmit" type="submit" value="Add Friend" />
@@ -56,6 +56,7 @@ const FriendList = (props) => {
         const loadFriendsFromServer = async () => {
             const response = await fetch('/getFriends');
             const data = await response.json();
+            console.log(data);
             setFriends(data.friends);
         };
 
@@ -71,9 +72,12 @@ const FriendList = (props) => {
     }
 
     const friendStats = friends.map(friend => {
+        console.log(friend.wins[trouble]);
+        const wins = friend.wins.trouble + friend.wins.sects + friend.wins.moon + friend.wins.other;
         return (
             <div key={friend.username} className="friend">
                 <h3 className="username">{friend.username}</h3>
+                <p>Wins {wins}</p>
             </div>
         );
     });
@@ -88,7 +92,7 @@ const App = () => {
 
     return (
         <>
-            <NavBar status={reloadStatus} />
+            <NavBar />
 
             <div className="mainPageContents">
                 <div id="addFriends">

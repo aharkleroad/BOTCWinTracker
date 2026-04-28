@@ -1,5 +1,3 @@
-import { isUndefined } from 'underscore';
-
 const helper = require('./helper.js');
 const React = require('react');
 const { useState, useEffect } = React;
@@ -32,6 +30,24 @@ const NavBar = (props) => {
     );
 };
 
+const Ads = (props) => {
+    const [accountStatus, setStatus] = useState(props.status);
+
+    useEffect(() => {
+        // need to access account status 
+        const loadAccountStatus = async () => {
+            const response = await fetch('/getAccountType');
+            const data = await response.json();
+            setStatus(data.premiumMember[0].premiumMember);
+        }
+
+        loadAccountStatus();
+    }, []);
+
+    if (accountStatus) return (<></>);
+    return (<div>Ads!</div>);
+}
+
 const App = () => {
     const [reloadStatus, setReloadStatus] = useState(false);
     const [passChangeStatus, setPassChangeStatus] = useState(undefined);
@@ -43,12 +59,15 @@ const App = () => {
             <div>
                 <h1>Stats!</h1>
             </div>
+            <div id="ads">
+                <Ads status={false} />
+            </div>
         </>
     );
 };
 
 const init = () => {
-    const root = createRoot(document.getElementById('settings'));
+    const root = createRoot(document.getElementById('app'));
     root.render(<App />);
 }
 

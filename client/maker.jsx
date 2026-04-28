@@ -78,7 +78,7 @@ const GameList = (props) => {
     const gameRecaps = games.map(game => {
         return (
             <div key={game.id} className="game">
-                <img src="/assets/img/domoface.jpeg" alt="domo face" className="domoFace" />
+                <img src="/assets/img/domoface.jpeg" alt="script icon" className="scriptImage" />
                 <h3 className="script">Script: {game.script}</h3>
                 <h3 className="alignment">Starting Alignment: {game.goodStartAlignment}</h3>
             </div>
@@ -229,13 +229,16 @@ const App = () => {
 
             <div className="mainPageContents">
                 <div id="createGame">
-                    <GameForm triggerReload={() => setReloadGames(!reloadGames)} />
+                    <GameForm triggerReload={(gameStats) => {
+                        setReloadGames(!reloadGames);
+                        helper.sendPost('/stats', { gameStats });
+                    }} />
                 </div>
                 <div id="games">
                     <GameList games={[]} reloadGames={reloadGames} />
                 </div>
                 <div id="ads">
-                    <Ads status={false}/>
+                    <Ads status={false} />
                 </div>
             </div>
         </>

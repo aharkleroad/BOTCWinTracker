@@ -31,7 +31,9 @@ const bypassSecure = (req, res, next) => {
 }
 
 const requiresPremium = (req, res, next) => {
-    if (!req.session.account.premiumStatus){
+    console.log("middleware");
+    if (!req.session.account.premiumMember){
+        console.log("not premium :(");
         return res.redirect('/');
     }
     return next();

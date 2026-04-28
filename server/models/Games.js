@@ -47,9 +47,5 @@ const GameSchema = new mongoose.Schema({
     },
 });
 
-GameSchema.statics.toAPI = (doc) => ({
-    
-});
-
 const GameModel = mongoose.model('Game', GameSchema);
 module.exports = GameModel;
