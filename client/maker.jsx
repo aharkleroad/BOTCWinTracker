@@ -78,7 +78,7 @@ const GameList = (props) => {
     const gameRecaps = games.map(game => {
         return (
             <div key={game.id} className="game">
-                <img src="/assets/img/domoface.jpeg" alt="script icon" className="scriptImage" />
+                <img src="/assets/img/troubleBrewing.png" alt="script icon" className="scriptImage" width="100px"/>
                 <h3 className="script">Script: {game.script}</h3>
                 <h3 className="alignment">Starting Alignment: {game.goodStartAlignment}</h3>
             </div>
@@ -217,7 +217,12 @@ const Ads = (props) => {
     }, []);
 
     if (accountStatus) return (<></>);
-    return (<div>Ads!</div>);
+    return (
+        <>
+            <img src="/assets/img/placeholderAd.png" alt="ad" className="ad" width="400px" />
+            <img src="/assets/img/placeholderAd.png" alt="ad" className="ad" width="400px" />
+        </>
+    );
 }
 
 const App = () => {

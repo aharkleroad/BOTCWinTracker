@@ -45,7 +45,12 @@ const Ads = (props) => {
     }, []);
 
     if (accountStatus) return (<></>);
-    return (<div>Ads!</div>);
+    return (
+        <>
+            <img src="/assets/img/placeholderAd.png" alt="ad" className="ad" width="400px" />
+            <img src="/assets/img/placeholderAd.png" alt="ad" className="ad" width="400px" />
+        </>
+    );
 }
 
 const App = () => {
